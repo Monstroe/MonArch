@@ -301,5 +301,5 @@ partprobe ${disk_device}
 genfstab -U /mnt
 
 # Unmounting partitions
-umount -a
+#umount -a
 echo "Installation complete. Please reboot your computer."
