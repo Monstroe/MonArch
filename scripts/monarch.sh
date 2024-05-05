@@ -292,10 +292,6 @@ else
     fi
 fi
 
-if [ -n "$swap_size" ]; then
-    mkswap $disk_part2
-fi
-
 echo "Partitioning complete!"
 partprobe ${disk_device}
 
