@@ -256,7 +256,6 @@ sgdisk --new $counter::-0 --typecode=3:8300 --change-name=3:"Linux File System" 
 
 echo "Formatting the partitions..."
 if [ -d "/sys/firmware/efi" ]; then
-    echo "Formatting EFI system partition..."
     mkfs.fat -F 32 $disk_part1
     if [ -n "$swap_size" ]; then
         mkswap $disk_part2
@@ -275,13 +274,9 @@ fi
 
 echo "Mounting file systems..."
 if [ -d "/sys/firmware/efi" ]; then
-    echo "Mounting EFI system partition..."
-    echo "EFI system partition: $disk_part1"
     mount --mkdir $disk_part1 /mnt/boot
     if [ -n "$swap_size" ]; then
-        echo "Swap partition: $disk_part2"
         swapon $disk_part2
-        echo "Root partition: $disk_part3"
         mount $disk_part3 /mnt
     else
         mount $disk_part2 /mnt
@@ -322,6 +317,10 @@ echo -ne "
 
 "
 
+# More software to install down the line
+# libreoffice firefox gufw system-config-printer gcc python python-pip
+
+arch-chroot /mnt <<EOF
 arch_configuration() {
     # Setting up Timezone
     echo "Setting up timezone..."
@@ -429,7 +428,7 @@ graphics_drivers_install() {
 extra_software_install() {
     # Installing more sofware
     echo "Installing more software..."
-    pacman -S --noconfirm --needed cups ntp bluez bluez-utils avahi gcc python python-pip
+    pacman -S --noconfirm --needed cups ntp bluez bluez-utils avahi
 
     # Enabling important daemons
     echo "Enabling important daemons..."
@@ -449,10 +448,6 @@ extra_software_install() {
     echo "Avahi enabled"
 }
 
-# More software to install down the line
-# libreoffice firefox gufw system-config-printer
-
-arch-chroot /mnt <<EOF
 arch_configuration
 microcode_install
 graphics_drivers_install
