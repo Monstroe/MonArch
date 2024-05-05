@@ -299,7 +299,7 @@ fi
 echo "Partitioning complete!"
 partprobe ${disk_device}
 
-genfstab -U /mnt >>/mnt/etc/fstab
+genfstab -U /mnt
 
 # Unmounting partitions
 umount -a
