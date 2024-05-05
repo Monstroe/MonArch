@@ -41,7 +41,7 @@ function partition_input() {
     echo "-------------------------------------------------"
     lsblk -n -o NAME | grep -E 'sd[a-z]|nvme[0-9]' | awk '{print $1}'
     echo "-------------------------------------------------"
-    read -p "Enter disk device to format (e.g. sda OR nvme0): " disk_device
+    read -p "Enter disk device to format (e.g. sda OR nvme0n1): " disk_device
     disk_device="/dev/$disk_device"
     echo "Chosen disk device: $disk_device"
     sleep 1
@@ -57,6 +57,7 @@ function partition_input() {
         echo "3. Root partition        Remainder of the device"
         echo "-------------------------------------------------"
         read -p "Enter size for EFI system partition (specify GiB or MiB): " efi_size
+        efi_size=$(echo $efi_size | sed 's/ //g')
     else
         echo "BIOS system detected."
         echo "Refer to the arch wiki for more information on BIOS systems."
@@ -66,7 +67,10 @@ function partition_input() {
         echo "2. Root partition        Remainder of the device"
         echo "-------------------------------------------------"
     fi
-    read -p "Enter size for swap partition (specify GiB or MiB): " swap_size
+    read -p "Enter size for swap partition (specify GiB or MiB, leave blank for no swap partition): " swap_size
+    if [ -n "$swap_size" ]; then
+        swap_size=$(echo $swap_size | sed 's/ //g')
+    fi
 
     sleep 1
     echo
@@ -76,8 +80,12 @@ function partition_input() {
     if [ -d "/sys/firmware/efi" ]; then
         echo "1. EFI system partition  $efi_size"
     fi
-    echo "2. Swap partition        $swap_size"
-    echo "3. Root partition        Remainder of the device"
+    if [ -n "$swap_size" ]; then
+        echo "2. Swap partition        $swap_size"
+        echo "3. Root partition        Remainder of the device"
+    else
+        echo "2. Root partition        Remainder of the device"
+    fi
     echo "-------------------------------------------------"
     read -p "Is this information correct? (y/n) " correct
 
@@ -231,48 +239,79 @@ if [[ "${disk_device}" =~ "nvme" ]]; then
     disk_part3=${disk_device}p3
 fi
 
-echo "Disk device: $disk_device"
-echo "Partition 1: $disk_part1"
-echo "Partition 2: $disk_part2"
-echo "Partition 3: $disk_part3"
-echo "EFI size: $efi_size"
-echo "Swap size: $swap_size"
-echo
 echo "Clearing disk..."
-
 sgdisk --clear ${disk_device}
-# Check if UEFI is enabled
+
+echo "Partitioning disk..."
+counter=1
 if [ -d "/sys/firmware/efi" ]; then
-    echo "UEFI system detected, partitioning disk..."
-    sgdisk --new 1::+$efi_size --typecode=1:ef00 --change-name=1:"EFI System Partition" $disk_device
-    sgdisk --new 2::+$swap_size --typecode=2:8200 --change-name=2:"Linux Swap" $disk_device
-    sgdisk --new 3::-0 --typecode=3:8300 --change-name=3:"Linux File System" $disk_device
+    sgdisk --new $counter::+$efi_size --typecode=1:ef00 --change-name=1:"EFI System Partition" $disk_device
+    ((counter++))
+fi
+if [ -n "$swap_size" ]; then
+    sgdisk --new $counter::+$swap_size --typecode=2:8200 --change-name=2:"Linux Swap" $disk_device
+    ((counter++))
+fi
+sgdisk --new $counter::-0 --typecode=3:8300 --change-name=3:"Linux File System" $disk_device
 
-    echo "Formatting the partitions..."
+echo "Formatting the partitions..."
+if [ -d "/sys/firmware/efi" ]; then
     mkfs.fat -F 32 $disk_part1
-    mkswap $disk_part2
-    mkfs.ext4 $disk_part3
-
-    echo "Mounting file systems..."
-    mount --mkdir $disk_part1 /mnt/boot
-    swapon $disk_part2
-    mount $disk_part3 /mnt
+    if [ -n "$swap_size" ]; then
+        mkswap $disk_part2
+        mkfs.ext4 $disk_part3
+    else
+        mkfs.ext4 $disk_part2
+    fi
 else
-    echo "BIOS system detected, partitioning disk..."
-    sgdisk --new 1::+${swap_size} --typecode=2:8200 --change-name=2:"Linux Swap" ${disk_device}
-    sgdisk --new 2::-0 --typecode=3:8300 --change-name=3:"Linux File System" ${disk_device}
+    if [ -n "$swap_size" ]; then
+        mkswap $disk_part1
+        mkfs.ext4 $disk_part2
+    else
+        mkfs.ext4 $disk_part1
+    fi
+fi
 
-    echo "Formatting the partitions..."
-    mkswap ${disk_part1}
-    mkfs.ext4 ${disk_part2}
+echo "Mounting file systems..."
+if [ -d "/sys/firmware/efi" ]; then
+    mount --mkdir $disk_part1 /mnt/boot
+    if [ -n "$swap_size" ]; then
+        swapon $disk_part2
+        mount $disk_part3 /mnt
+    else
+        mount $disk_part2 /mnt
+    fi
+else
+    if [ -n "$swap_size" ]; then
+        swapon $disk_part1
+        mount $disk_part2 /mnt
+    else
+        mount $disk_part1 /mnt
+    fi
+fi
 
-    echo "Mounting file systems..."
-    swapon ${disk_part1}
-    mount ${disk_part2} /mnt
+if [ -n "$swap_size" ]; then
+    mkswap $disk_part2
 fi
 
 echo "Partitioning complete!"
 partprobe ${disk_device}
+
+echo
+echo -ne "
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+                        Arch Install
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+"
+echo "Installing kernel and other important software..."
+pacstrap -K /mnt base linux linux-firmware sof-firmware base-devel grub nano vim git networkmanager reflector ufw wget curl sudo --noconfirm --needed
+echo "Kernel and software installed!"
+genfstab -U /mnt >>/mnt/etc/fstab
+echo "Generated /etc/fstab:"
+echo "-------------------------------------------------"
+cat /mnt/etc/fstab
+echo "-------------------------------------------------"
 
 # Unmounting partitions
 umount -a
