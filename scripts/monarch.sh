@@ -276,9 +276,12 @@ fi
 echo "Mounting file systems..."
 if [ -d "/sys/firmware/efi" ]; then
     echo "Mounting EFI system partition..."
+    echo "EFI system partition: $disk_part1"
     mount --mkdir $disk_part1 /mnt/boot
     if [ -n "$swap_size" ]; then
+        echo "Swap partition: $disk_part2"
         swapon $disk_part2
+        echo "Root partition: $disk_part3"
         mount $disk_part3 /mnt
     else
         mount $disk_part2 /mnt
