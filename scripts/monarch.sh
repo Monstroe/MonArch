@@ -256,6 +256,7 @@ sgdisk --new $counter::-0 --typecode=3:8300 --change-name=3:"Linux File System" 
 
 echo "Formatting the partitions..."
 if [ -d "/sys/firmware/efi" ]; then
+    echo "Formatting EFI system partition..."
     mkfs.fat -F 32 $disk_part1
     if [ -n "$swap_size" ]; then
         mkswap $disk_part2
@@ -274,6 +275,7 @@ fi
 
 echo "Mounting file systems..."
 if [ -d "/sys/firmware/efi" ]; then
+    echo "Mounting EFI system partition..."
     mount --mkdir $disk_part1 /mnt/boot
     if [ -n "$swap_size" ]; then
         swapon $disk_part2
@@ -297,21 +299,7 @@ fi
 echo "Partitioning complete!"
 partprobe ${disk_device}
 
-echo
-echo -ne "
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-                        Arch Install
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-"
-echo "Installing kernel and other important software..."
-pacstrap -K /mnt base linux linux-firmware sof-firmware base-devel grub nano vim git networkmanager reflector ufw wget curl sudo --noconfirm --needed
-echo "Kernel and software installed!"
 genfstab -U /mnt >>/mnt/etc/fstab
-echo "Generated /etc/fstab:"
-echo "-------------------------------------------------"
-cat /mnt/etc/fstab
-echo "-------------------------------------------------"
 
 # Unmounting partitions
 umount -a
