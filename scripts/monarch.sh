@@ -320,7 +320,6 @@ echo -ne "
 # More software to install down the line
 # libreoffice firefox gufw system-config-printer gcc python python-pip
 
-arch-chroot /mnt <<EOF
 arch_configuration() {
     # Setting up Timezone
     echo "Setting up timezone..."
@@ -448,11 +447,85 @@ extra_software_install() {
     echo "Avahi enabled"
 }
 
-arch_configuration
-microcode_install
-graphics_drivers_install
-extra_software_install
+arch-chroot /mnt <<EOF
+
+# Setting up Timezone
+echo "Setting up timezone..."
+ln -sf /usr/share/zoneinfo/${region}/${city} /etc/localtime
+hwclock --systohc
+
+# Setting up Locale
+echo "Setting up locale..."
+sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8' /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" >/etc/locale.conf
+echo "KEYMAP=us" >/etc/vconsole.conf
+
+# Setting Hostname
+echo "Setting hostname..."
+echo "${hostname}" >/etc/hostname
+
+# Setting Root Password
+echo "Setting root password..."
+echo "root:${root_passwd}" | chpasswd
+
+# Creating Default User
+echo "Creating user..."
+useradd -m -G wheel -s /bin/bash ${user_name}
+echo "${user_name}:${user_passwd}" | chpasswd
+sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+
+# Setting up GRUB Bootloader
+echo "Setting up GRUB Bootloader..."
+if [ -d "/sys/firmware/efi" ]; then
+    pacman -S efibootmgr --noconfirm --needed
+    grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+else
+    grub-install --target=i386-pc ${DISK_DEVICE}
+fi
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Editing pacman
+echo "Editing pacman config..."
+# Add color
+sed -i 's/^#Color/Color/' /etc/pacman.conf
+# Add parallel downloading
+sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
+# Add ILoveCandy Modifier
+sed -i '/ParallelDownloads/a ILoveCandy' /etc/pacman.conf
+
+# Set up Reflector
+echo "Setting up mirrors with reflector..."
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
+reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+sed -i 's/--latest 5/--latest 20/' /etc/xdg/reflector/reflector.conf
+sed -i 's/--sort age/--sort rate/' /etc/xdg/reflector/reflector.conf
+
+# Set up firewall
+echo "Setting up firewall with ufw..."
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow ssh
+ufw limit ssh
+ufw enable
+
+# Set up AUR
+echo "Setting up AUR with yay"
+cd /home/$(user_name)
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd ..
+rm -rf yay
+
 EOF
+
+#arch-chroot /mnt <<EOF
+#arch_configuration
+#microcode_install
+#graphics_drivers_install
+#extra_software_install
+#EOF
 
 # Unmounting partitions
 umount -a
