@@ -328,7 +328,7 @@ arch_configuration() {
 
     # Setting up Locale
     echo "Setting up locale..."
-    sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8' /etc/locale.gen
+    sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
     locale-gen
     echo "LANG=en_US.UTF-8" >/etc/locale.conf
     echo "KEYMAP=us" >/etc/vconsole.conf
@@ -450,30 +450,34 @@ extra_software_install() {
 arch-chroot /mnt <<EOF
 
 # Setting up Timezone
-echo "Setting up timezone..."
-ln -sf /usr/share/zoneinfo/${region}/${city} /etc/localtime
+ln -sf /usr/share/zoneinfo/$region/$city /etc/localtime
 hwclock --systohc
 
 # Setting up Locale
-echo "Setting up locale..."
-sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8' /etc/locale.gen
+sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" >/etc/locale.conf
 echo "KEYMAP=us" >/etc/vconsole.conf
 
 # Setting Hostname
-echo "Setting hostname..."
-echo "${hostname}" >/etc/hostname
+echo "$hostname" >/etc/hostname
 
 # Setting Root Password
-echo "Setting root password..."
-echo "root:${root_passwd}" | chpasswd
+echo "root:$root_passwd" | chpasswd
 
 # Creating Default User
-echo "Creating user..."
-useradd -m -G wheel -s /bin/bash ${user_name}
-echo "${user_name}:${user_passwd}" | chpasswd
+useradd -m -G wheel -s /bin/bash $user_name
+echo "$user_name:$user_passwd" | chpasswd
 sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+
+# Setting up GRUB Bootloader
+if [ -d "/sys/firmware/efi" ]; then
+    pacman -S efibootmgr --noconfirm --needed
+    grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+else
+    grub-install --target=i386-pc $disk_device
+fi
+grub-mkconfig -o /boot/grub/grub.cfg
 
 EOF
 
