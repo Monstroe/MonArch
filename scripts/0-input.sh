@@ -57,7 +57,6 @@ function partition_input() {
     read -p "Enter size for swap partition (specify GiB or MiB, leave blank for no swap partition): " SWAP_SIZE
     if [ -n "$SWAP_SIZE" ]; then
         SWAP_SIZE=$(echo $SWAP_SIZE | sed 's/ //g')
-        SWAP_SIZE=$(echo $SWAP_SIZE | sed -E 's/\b([0-9]+)([GgMm])(i|I)(b|B)\b/\1\U\2\3\4/')
     fi
 
     sleep 1
@@ -69,7 +68,7 @@ function partition_input() {
         echo "1. EFI system partition  $EFI_SIZE"
     fi
     if [ -n "$SWAP_SIZE" ]; then
-        echo "2. Swap partition        $($SWAP_SIZE | sed 's/\([0-9]\)\([GgMm][iI][bB]\)/\1 \2/')"
+        echo "2. Swap partition        $SWAP_SIZE"
         echo "3. Root partition        Remainder of the device"
     else
         echo "2. Root partition        Remainder of the device"
