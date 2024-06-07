@@ -70,5 +70,3 @@ else
 fi
 
 echo "Partitioning complete!"
-#partprobe ${DISK_DEVICE}
-genfstab /mnt
