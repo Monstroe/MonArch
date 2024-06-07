@@ -7,15 +7,15 @@ echo -ne "
 "
 
 CFG_FILE=$CURR_DIR/settings.cfg
-if [ ! -f $CONFIG_FILE ]; then
-    touch -f $CONFIG_FILE
+if [ ! -f $CFG_FILE ]; then
+    touch -f $CFG_FILE
 fi
 
 set_var() {
-    if grep -E -q "^${1}.*" $CONFIG_FILE; then
-        sed -i -e "/^${1}.*/d" $CONFIG_FILE
+    if grep -E -q "^${1}.*" $CFG_FILE; then
+        sed -i -e "/^${1}.*/d" $CFG_FILE
     fi
-    echo "${1}=${2}" >>$CONFIG_FILE
+    echo "${1}=${2}" >>$CFG_FILE
 }
 
 DISK_DEVICE=""
