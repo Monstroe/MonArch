@@ -5,6 +5,7 @@ echo -ne "
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 "
+sleep 1
 
 CFG_FILE=$CURR_DIR/settings.cfg
 if [ ! -f $CFG_FILE ]; then
@@ -126,7 +127,7 @@ ROOT_PASSWD=""
 function account_input() {
     echo "Please provide the following account information:"
     echo "-------------------------------------------------"
-    read -p "Enter HOSTNAME for this device: " HOSTNAME
+    read -p "Enter hostname for this device: " HOSTNAME
     read -p "Enter user name for the primary account: " USER_NAME
     prompt_for_password "Enter password for the primary account" "Confirm password for the primary account" USER_PASSWD
     prompt_for_password "Enter password for the root account (MAKE THIS STRONG)" "Confirm password for the root account" ROOT_PASSWD

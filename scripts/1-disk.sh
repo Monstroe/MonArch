@@ -5,6 +5,8 @@ echo -ne "
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 "
+sleep 1
+
 source $CURR_DIR/settings.cfg
 
 disk_part1=${DISK_DEVICE}1
@@ -68,4 +70,5 @@ else
 fi
 
 echo "Partitioning complete!"
-partprobe ${DISK_DEVICE}
+#partprobe ${DISK_DEVICE}
+genfstab /mnt
