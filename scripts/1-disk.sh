@@ -70,3 +70,9 @@ else
 fi
 
 echo "Partitioning complete!"
+
+genfstab -U /mnt >>/mnt/etc/fstab
+echo "Generated /etc/fstab:"
+echo "-------------------------------------------------"
+cat /mnt/etc/fstab
+echo "-------------------------------------------------"
