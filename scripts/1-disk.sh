@@ -53,22 +53,14 @@ fi
 
 echo "Mounting file systems..."
 if [ -d "/sys/firmware/efi" ]; then
-    mount --mkdir $disk_part1 /mnt/boot
-    echo "Generated fstab 1:"
-    echo "-------------------------------------------------"
-    genfstab /mnt
-    echo "-------------------------------------------------"
     if [ -n "$SWAP_SIZE" ]; then
         swapon $disk_part2
         mount $disk_part3 /mnt
-
-        echo "Generated fstab 2:"
-        echo "-------------------------------------------------"
-        genfstab /mnt
-        echo "-------------------------------------------------"
     else
         mount $disk_part2 /mnt
     fi
+
+    mount --mkdir $disk_part1 /mnt/boot
 else
     if [ -n "$SWAP_SIZE" ]; then
         swapon $disk_part1
