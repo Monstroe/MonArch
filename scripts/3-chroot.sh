@@ -9,9 +9,6 @@ sleep 1
 
 source $CURR_DIR/settings.cfg
 
-# More software to install down the line
-# libreoffice firefox gufw system-config-printer gcc python python-pip
-
 arch_configuration() {
     # Setting up Timezone
     echo "Setting up timezone..."
