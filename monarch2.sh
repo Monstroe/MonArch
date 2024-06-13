@@ -481,13 +481,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 EOF
 
-#arch-chroot /mnt <<EOF
-#arch_configuration
-#microcode_install
-#graphics_drivers_install
-#extra_software_install
-#EOF
-
-# Unmounting partitions
-umount -a
-echo "Installation complete. Please reboot your computer."
+arch_configuration
+microcode_install
+graphics_drivers_install
+extra_software_install

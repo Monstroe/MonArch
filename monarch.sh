@@ -26,5 +26,11 @@ CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 bash $CURR_DIR/scripts/0-input.sh
 bash $CURR_DIR/scripts/1-disk.sh
-#bash $CURR_DIR/scripts/2-install.sh
-#bash $CURR_DIR/scripts/3-chroot.sh
+bash $CURR_DIR/scripts/2-install.sh
+arch-chroot /mnt bash $HOME/MonArch/scripts/3-chroot.sh
+
+# Unmounting partitions
+umount -a
+echo "----------------------------------------------------"
+echo " Installation complete. Please reboot your machine."
+echo "----------------------------------------------------"

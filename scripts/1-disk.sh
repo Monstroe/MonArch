@@ -59,7 +59,6 @@ if [ -d "/sys/firmware/efi" ]; then
     else
         mount $disk_part2 /mnt
     fi
-
     mount --mkdir $disk_part1 /mnt/boot
 else
     if [ -n "$SWAP_SIZE" ]; then
@@ -71,8 +70,3 @@ else
 fi
 
 echo "Partitioning complete!"
-
-echo "Generated /etc/fstab:"
-echo "-------------------------------------------------"
-genfstab /mnt
-echo "-------------------------------------------------"
