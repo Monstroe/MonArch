@@ -54,6 +54,10 @@ fi
 echo "Mounting file systems..."
 if [ -d "/sys/firmware/efi" ]; then
     mount --mkdir $disk_part1 /mnt/boot
+    echo "Generated fstab 1:"
+    echo "-------------------------------------------------"
+    genfstab /mnt
+    echo "-------------------------------------------------"
     if [ -n "$SWAP_SIZE" ]; then
         swapon $disk_part2
         mount $disk_part3 /mnt
@@ -71,8 +75,7 @@ fi
 
 echo "Partitioning complete!"
 
-genfstab -U /mnt >>/mnt/etc/fstab
 echo "Generated /etc/fstab:"
 echo "-------------------------------------------------"
-cat /mnt/etc/fstab
+genfstab /mnt
 echo "-------------------------------------------------"
