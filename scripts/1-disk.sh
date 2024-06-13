@@ -61,6 +61,11 @@ if [ -d "/sys/firmware/efi" ]; then
     if [ -n "$SWAP_SIZE" ]; then
         swapon $disk_part2
         mount $disk_part3 /mnt
+
+        echo "Generated fstab 2:"
+        echo "-------------------------------------------------"
+        genfstab /mnt
+        echo "-------------------------------------------------"
     else
         mount $disk_part2 /mnt
     fi
