@@ -119,7 +119,7 @@ function prompt_for_password() {
     done
 }
 
-HOSTNAME=""
+HOST_NAME=""
 USER_NAME=""
 USER_PASSWD=""
 ROOT_PASSWD=""
@@ -127,7 +127,7 @@ ROOT_PASSWD=""
 function account_input() {
     echo "Please provide the following account information:"
     echo "-------------------------------------------------"
-    read -p "Enter hostname for this device: " HOSTNAME
+    read -p "Enter hostname for this device: " HOST_NAME
     read -p "Enter user name for the primary account: " USER_NAME
     prompt_for_password "Enter password for the primary account" "Confirm password for the primary account" USER_PASSWD
     prompt_for_password "Enter password for the root account (MAKE THIS STRONG)" "Confirm password for the root account" ROOT_PASSWD
@@ -136,7 +136,7 @@ function account_input() {
 
 account_input
 echo "Account information complete!"
-set_var "HOSTNAME" "$HOSTNAME"
+set_var "HOST_NAME" "$HOST_NAME"
 set_var "USER_NAME" "$USER_NAME"
 set_var "USER_PASSWD" "$USER_PASSWD"
 set_var "ROOT_PASSWD" "$ROOT_PASSWD"

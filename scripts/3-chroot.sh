@@ -30,7 +30,7 @@ arch_configuration() {
 
     # Setting Hostname
     echo "Setting hostname..."
-    echo "${HOSTNAME}" >/etc/hostname
+    echo "${HOST_NAME}" >/etc/hostname
 
     # Setting Root Password
     echo "Setting root password..."
@@ -146,7 +146,7 @@ extra_software_install() {
     echo "Avahi enabled"
 }
 
-echo "Host: $HOSTNAME"
+echo "Host: $HOST_NAME"
 echo "User: $USER_NAME"
 echo "Region: $REGION"
 echo "City: $CITY"
