@@ -138,7 +138,24 @@ extra_software_install() {
     echo "UFW enabled"
     sudo systemctl enable avahi-daemon.service
     echo "Avahi enabled"
+
+    echo "Installing neoFetch..."
+    yay -S --noconfirm --needed neofetch
+    neoFetch
 }
+
+echo "Host: $HOSTNAME"
+echo "User: $USER_NAME"
+echo "Region: $REGION"
+echo "City: $CITY"
+echo "Disk: $DISK_DEVICE"
+echo "Swap: $SWAP_SIZE"
+echo "EFI: $EFI_SIZE"
+echo
+echo "Root Password: $ROOT_PASSWD"
+echo "User Password: $USER_PASSWD"
+echo
+sleep 5
 
 arch_configuration
 microcode_install
