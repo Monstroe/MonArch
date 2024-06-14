@@ -26,6 +26,9 @@ CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 bash $CURR_DIR/scripts/0-input.sh
 source $CURR_DIR/settings.cfg
+echo "Settings:"
+cat $CURR_DIR/settings.cfg
+sleep 5
 bash $CURR_DIR/scripts/1-disk.sh
 echo "Host: $HOST_NAME"
 echo "User: $USER_NAME"
