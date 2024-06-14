@@ -25,9 +25,19 @@ Yb, `88`  `88`  `88 ,d8`   Y8   "8b,dPYb, `8dP`     `88          dP   88 Yb,  88
 CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 bash $CURR_DIR/scripts/0-input.sh
-source $CURR_DIR/settings.cfg
-echo "Settings:"
-cat $CURR_DIR/settings.cfg
+source settings.cfg
+echo "Settings (MASTER):"
+echo "Host: $HOST_NAME"
+echo "User: $USER_NAME"
+echo "Region: $REGION"
+echo "City: $CITY"
+echo "Disk: $DISK_DEVICE"
+echo "Swap: $SWAP_SIZE"
+echo "EFI: $EFI_SIZE"
+echo "Root Password: $ROOT_PASSWD"
+echo "User Password: $USER_PASSWD"
+sleep 5
+cat settings.cfg
 sleep 5
 bash $CURR_DIR/scripts/1-disk.sh
 bash $CURR_DIR/scripts/2-install.sh
