@@ -7,7 +7,13 @@ echo -ne "
 "
 sleep 1
 
-source $CURR_DIR/settings.cfg
+DISK_DEVICE=$1
+REGION=$2
+CITY=$3
+HOST_NAME=$4
+USER_NAME=$5
+USER_PASSWD=$6
+ROOT_PASSWD=$7
 
 arch_configuration() {
     # Setting up Timezone
@@ -138,10 +144,6 @@ extra_software_install() {
     echo "UFW enabled"
     sudo systemctl enable avahi-daemon.service
     echo "Avahi enabled"
-
-    echo "Installing neoFetch..."
-    yay -S --noconfirm --needed neofetch
-    neoFetch
 }
 
 echo "Host: $HOSTNAME"
@@ -161,3 +163,8 @@ arch_configuration
 microcode_install
 graphics_drivers_install
 extra_software_install
+
+# The most important step
+echo "Installing neoFetch..."
+yay -S --noconfirm --needed neofetch
+neoFetch
