@@ -7,10 +7,8 @@ echo -ne "
 "
 sleep 1
 
-CFG_FILE=$CURR_DIR/settings.cfg
-if [ ! -f $CFG_FILE ]; then
-    touch -f $CFG_FILE
-fi
+CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+source $CURR_DIR/../settings.cfg
 
 set_var() {
     if grep -E -q "^${1}.*" $CFG_FILE; then

@@ -23,9 +23,14 @@ Yb, `88`  `88`  `88 ,d8`   Y8   "8b,dPYb, `8dP`     `88          dP   88 Yb,  88
 '
 
 CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+CFG_FILE=$CURR_DIR/settings.cfg
+if [ ! -f $CFG_FILE ]; then
+    touch -f $CFG_FILE
+    echo "PATH=$CURR_DIR"
+fi
 
 bash $CURR_DIR/scripts/0-input.sh
-source $CURR_DIR/scripts/0-input.sh
+
 echo "Settings (MASTER):"
 echo "Host: $HOST_NAME"
 echo "User: $USER_NAME"
@@ -37,6 +42,7 @@ echo "EFI: $EFI_SIZE"
 echo "Root Password: $ROOT_PASSWD"
 echo "User Password: $USER_PASSWD"
 sleep 5
+
 bash $CURR_DIR/scripts/1-disk.sh
 bash $CURR_DIR/scripts/2-install.sh
 arch-chroot /mnt git clone https://github.com/Monstroe/MonArch.git
@@ -44,6 +50,7 @@ arch-chroot /mnt bash /MonArch/scripts/3-chroot.sh $DISK_DEVICE $REGION $CITY $H
 
 # Unmounting partitions
 umount -a
+rm $CFG_FILE
 echo "----------------------------------------------------"
 echo " Installation complete. Please reboot your machine."
 echo "----------------------------------------------------"
