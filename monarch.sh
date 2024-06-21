@@ -16,9 +16,8 @@ Yb, `88`  `88`  `88 ,d8`   Y8   "8b,dPYb, `8dP`     `88          dP   88 Yb,  88
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
                                                 Arch Linux Install Script
-                                    Creates Arch install with Xorg + Suckless suite
 
-                                                Created By: Monstroe
+                                                  Created By: Monstroe
 
 '
 
@@ -30,19 +29,7 @@ if [ ! -f $CFG_FILE ]; then
 fi
 
 bash $CURR_DIR/scripts/0-input.sh
-
-echo "Settings (MASTER):"
-echo "Host: $HOST_NAME"
-echo "User: $USER_NAME"
-echo "Region: $REGION"
-echo "City: $CITY"
-echo "Disk: $DISK_DEVICE"
-echo "Swap: $SWAP_SIZE"
-echo "EFI: $EFI_SIZE"
-echo "Root Password: $ROOT_PASSWD"
-echo "User Password: $USER_PASSWD"
-sleep 5
-
+source $CFG_FILE
 bash $CURR_DIR/scripts/1-disk.sh
 bash $CURR_DIR/scripts/2-install.sh
 arch-chroot /mnt git clone https://github.com/Monstroe/MonArch.git

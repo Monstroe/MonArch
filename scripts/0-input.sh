@@ -7,14 +7,8 @@ echo -ne "
 "
 sleep 1
 
-CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-source $CURR_DIR/../settings.cfg
-
 set_var() {
-    if grep -E -q "^${1}.*" $CFG_FILE; then
-        sed -i -e "/^${1}.*/d" $CFG_FILE
-    fi
-    echo "${1}=${2}" >>$CFG_FILE
+    echo "${1}=${2}" >>settings.cfg
 }
 
 DISK_DEVICE=""
@@ -41,7 +35,7 @@ function partition_input() {
         echo "2. Swap partition        At least 4 GiB"
         echo "3. Root partition        Remainder of the device"
         echo "-------------------------------------------------"
-        read -p "Enter size for EFI system partition (specify GiB or MiB): " EFI_SIZE
+        read -p "Enter size for EFI system partition (specify GiB or MiB, CASE SENSITIVE): " EFI_SIZE
         EFI_SIZE=$(echo $EFI_SIZE | sed 's/ //g')
     else
         echo "BIOS system detected."
@@ -52,21 +46,23 @@ function partition_input() {
         echo "2. Root partition        Remainder of the device"
         echo "-------------------------------------------------"
     fi
-    read -p "Enter size for swap partition (specify GiB or MiB, leave blank for no swap partition): " SWAP_SIZE
+    read -p "Enter size for swap partition (specify GiB or MiB, leave blank for no swap partition, CASE SENSITIVE): " SWAP_SIZE
     if [ -n "$SWAP_SIZE" ]; then
         SWAP_SIZE=$(echo $SWAP_SIZE | sed 's/ //g')
     fi
 
+    efi_size_display="${EFI_SIZE//GiB/ GiB}" && efi_size_display="${efi_size_display//MiB/ MiB}"
+    swap_size_display="${SWAP_SIZE//GiB/ GiB}" && swap_size_display="${swap_size_display//MiB/ MiB}"
     sleep 1
     echo
     echo "Final partitioning scheme: "
     echo "Disk device: $DISK_DEVICE"
     echo "-------------------------------------------------"
     if [ -d "/sys/firmware/efi" ]; then
-        echo "1. EFI system partition  $EFI_SIZE"
+        echo "1. EFI system partition  $efi_size_display"
     fi
     if [ -n "$SWAP_SIZE" ]; then
-        echo "2. Swap partition        $SWAP_SIZE"
+        echo "2. Swap partition        $swap_size_display"
         echo "3. Root partition        Remainder of the device"
     else
         echo "2. Root partition        Remainder of the device"
@@ -152,7 +148,7 @@ function region_input() {
     echo "--------------------------------------------------------------------------------------------------"
     ls /usr/share/zoneinfo/
     echo "--------------------------------------------------------------------------------------------------"
-    read -p "Enter your region (this will be used to set the timezone): " REGION
+    read -p "Enter your region (this will be used to set the timezone, CASE SENSITIVE): " REGION
     echo
 
     if [ ! -d "/usr/share/zoneinfo/$REGION" ] && [ ! -f "/usr/share/zoneinfo/$REGION" ]; then
@@ -169,7 +165,7 @@ function city_input() {
     echo "--------------------------------------------------------------------------------------------------"
     ls /usr/share/zoneinfo/$REGION
     echo "--------------------------------------------------------------------------------------------------"
-    read -p "Enter your city (this will be used to set the timezone): " CITY
+    read -p "Enter your city (this will be used to set the timezone, CASE SENSITIVE): " CITY
     echo
 
     if [ ! -f "/usr/share/zoneinfo/$REGION/$CITY" ]; then

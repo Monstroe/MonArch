@@ -7,8 +7,7 @@ echo -ne "
 "
 sleep 1
 
-CURR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-source $CURR_DIR/../settings.cfg
+source settings.cfg
 
 echo "Settings (DISK):"
 echo "Host: $HOST_NAME"
@@ -20,7 +19,7 @@ echo "Swap: $SWAP_SIZE"
 echo "EFI: $EFI_SIZE"
 echo "Root Password: $ROOT_PASSWD"
 echo "User Password: $USER_PASSWD"
-sleep 5
+sleep 120
 
 disk_part1=${DISK_DEVICE}1
 disk_part2=${DISK_DEVICE}2

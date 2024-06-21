@@ -157,7 +157,7 @@ echo
 echo "Root Password: $ROOT_PASSWD"
 echo "User Password: $USER_PASSWD"
 echo
-sleep 5
+sleep 10
 
 arch_configuration
 microcode_install
