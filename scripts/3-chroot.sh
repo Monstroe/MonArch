@@ -7,20 +7,21 @@ echo -ne "
 "
 sleep 1
 
-DISK_DEVICE=$1
-REGION=$2
-CITY=$3
-HOST_NAME=$4
-USER_NAME=$5
-USER_PASSWD=$6
-ROOT_PASSWD=$7
+source settings.cfg
+
+#DISK_DEVICE=$1
+#REGION=$2
+#CITY=$3
+#HOST_NAME=$4
+#USER_NAME=$5
+#USER_PASSWD=$6
+#ROOT_PASSWD=$7
 
 arch_configuration() {
     # Setting up Timezone
     echo "Setting up timezone..."
     ln -sf /usr/share/zoneinfo/${REGION}/${CITY} /etc/localtime
     hwclock --systohc
-    sleep 10
 
     # Setting up Locale
     echo "Setting up locale..."
@@ -28,12 +29,10 @@ arch_configuration() {
     locale-gen
     echo "LANG=en_US.UTF-8" >/etc/locale.conf
     echo "KEYMAP=us" >/etc/vconsole.conf
-    sleep 10
 
     # Setting Hostname
     echo "Setting hostname..."
     echo "${HOST_NAME}" >/etc/hostname
-    sleep 10
 
     # Setting Root Password
     echo "Setting root password..."
@@ -45,22 +44,18 @@ arch_configuration() {
     useradd -m -G wheel -s /bin/bash ${USER_NAME}
     echo "${USER_NAME}:${USER_PASSWD}" | chpasswd
     sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
-    sleep 10
 
     # Setting up GRUB Bootloader
     echo "Setting up GRUB Bootloader..."
     if [ -d "/sys/firmware/efi" ]; then
         echo "EFI Bootloader"
-        sleep 5
         pacman -S efibootmgr --noconfirm --needed
         grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
     else
         echo "BIOS Bootloader"
-        sleep 5
         grub-install --target=i386-pc ${DISK_DEVICE}
     fi
     grub-mkconfig -o /boot/grub/grub.cfg
-    sleep 10
 
     # Editing pacman
     echo "Editing pacman config..."
@@ -70,7 +65,6 @@ arch_configuration() {
     sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
     # Add ILoveCandy Modifier
     sed -i '/ParallelDownloads/a ILoveCandy' /etc/pacman.conf
-    sleep 10
 
     # Set up Reflector
     echo "Setting up mirrors with reflector..."
@@ -84,8 +78,8 @@ arch_configuration() {
     echo "Setting up firewall with ufw..."
     ufw default deny incoming
     ufw default allow outgoing
-    ufw allow ssh
-    ufw limit ssh
+    #ufw allow ssh
+    #ufw limit ssh
     ufw enable
     sleep 10
 
@@ -97,7 +91,6 @@ arch_configuration() {
     makepkg -si
     cd ..
     rm -rf yay
-    sleep 10
 }
 
 # NOTE: The following code is from Chris Titus Tech's "ArchTitus" repository
@@ -183,5 +176,5 @@ extra_software_install
 
 # The most important step
 echo "Installing neoFetch..."
-yay -S --noconfirm --needed neofetch
+pacman -S --noconfirm --needed neofetch
 neoFetch
