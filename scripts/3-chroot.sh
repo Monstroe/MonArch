@@ -9,13 +9,21 @@ sleep 1
 
 source settings.cfg
 
-#DISK_DEVICE=$1
-#REGION=$2
-#CITY=$3
-#HOST_NAME=$4
-#USER_NAME=$5
-#USER_PASSWD=$6
-#ROOT_PASSWD=$7
+DISK_DEVICE=$1
+REGION=$2
+CITY=$3
+HOST_NAME=$4
+USER_NAME=$5
+USER_PASSWD=$6
+ROOT_PASSWD=$7
+
+echo "DISK_DEVICE $1"
+echo "REGION $2"
+echo "CITY $3"
+echo "HOST_NAME $4"
+echo "USER_NAME $5"
+echo "USER_PASSWD $6"
+echo "ROOT_PASSWD $7"
 
 arch_configuration() {
     # Setting up Timezone
@@ -156,6 +164,8 @@ extra_software_install() {
     sleep 10
 }
 
+echo
+echo "Final configuration"
 echo "Host: $HOST_NAME"
 echo "User: $USER_NAME"
 echo "Region: $REGION"

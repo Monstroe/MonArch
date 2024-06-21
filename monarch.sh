@@ -33,7 +33,17 @@ source $CFG_FILE
 bash $CURR_DIR/scripts/1-disk.sh
 bash $CURR_DIR/scripts/2-install.sh
 arch-chroot /mnt git clone https://github.com/Monstroe/MonArch.git
-arch-chroot /mnt bash /MonArch/scripts/3-chroot.sh
+
+echo "Disk Device: $DISK_DEVICE"
+echo "Region: $REGION"
+echo "City: $CITY"
+echo "Host Name: $HOST_NAME"
+echo "User Name: $USER_NAME"
+echo "User Password: $USER_PASSWD"
+echo "Root Password: $ROOT_PASSWD"
+sleep 10
+
+arch-chroot /mnt bash /MonArch/scripts/3-chroot.sh $DISK_DEVICE $REGION $CITY $HOST_NAME $USER_NAME $USER_PASSWD $ROOT_PASSWD
 
 # Unmounting partitions
 umount -a
