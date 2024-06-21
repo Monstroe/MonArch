@@ -7,28 +7,22 @@ echo -ne "
 "
 sleep 1
 
-source settings.cfg
-
 DISK_DEVICE=$1
-REGION=$2
-CITY=$3
-HOST_NAME=$4
-USER_NAME=$5
-USER_PASSWD=$6
-ROOT_PASSWD=$7
-
-echo "DISK_DEVICE $1"
-echo "REGION $2"
-echo "CITY $3"
-echo "HOST_NAME $4"
-echo "USER_NAME $5"
-echo "USER_PASSWD $6"
-echo "ROOT_PASSWD $7"
+HOST_NAME=$2
+USER_NAME=$3
+USER_PASSWD=$4
+ROOT_PASSWD=$5
+REGION=$6
+CITY=$7
 
 arch_configuration() {
     # Setting up Timezone
     echo "Setting up timezone..."
-    ln -sf /usr/share/zoneinfo/${REGION}/${CITY} /etc/localtime
+    if [ -d "/usr/share/zoneinfo/$REGION" ]; then
+        ln -sf /usr/share/zoneinfo/$REGION/$CITY /etc/localtime
+    else
+        ln -sf /usr/share/zoneinfo/$REGION /etc/localtime
+    fi
     hwclock --systohc
 
     # Setting up Locale
@@ -187,4 +181,3 @@ extra_software_install
 # The most important step
 echo "Installing neoFetch..."
 pacman -S --noconfirm --needed neofetch
-neoFetch

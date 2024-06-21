@@ -43,11 +43,10 @@ echo "User Password: $USER_PASSWD"
 echo "Root Password: $ROOT_PASSWD"
 sleep 10
 
-arch-chroot /mnt bash /MonArch/scripts/3-chroot.sh $DISK_DEVICE $REGION $CITY $HOST_NAME $USER_NAME $USER_PASSWD $ROOT_PASSWD
+arch-chroot /mnt bash /MonArch/scripts/3-chroot.sh $DISK_DEVICE $HOST_NAME $USER_NAME $USER_PASSWD $ROOT_PASSWD $REGION $CITY
 
 # Unmounting partitions
 umount -a
-rm $CFG_FILE
 echo "----------------------------------------------------"
 echo " Installation complete. Please reboot your machine."
 echo "----------------------------------------------------"
