@@ -39,13 +39,12 @@ arch_configuration() {
     # Setting Root Password
     echo "Setting root password..."
     echo "root:${ROOT_PASSWD}" | chpasswd
-    sleep 10
 
     # Creating Default User
     echo "Creating user..."
     useradd -m -G wheel -s /bin/bash ${USER_NAME}
     echo "${USER_NAME}:${USER_PASSWD}" | chpasswd
-    sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+    sed -i 's/^# %wheel ALL=(ALL:ALL) ALL$/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 
     # Setting up GRUB Bootloader
     echo "Setting up GRUB Bootloader..."
@@ -74,16 +73,12 @@ arch_configuration() {
     reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
     sed -i 's/--latest 5/--latest 20/' /etc/xdg/reflector/reflector.conf
     sed -i 's/--sort age/--sort rate/' /etc/xdg/reflector/reflector.conf
-    sleep 10
 
     # Set up firewall
     echo "Setting up firewall with ufw..."
     ufw default deny incoming
     ufw default allow outgoing
-    #ufw allow ssh
-    #ufw limit ssh
     ufw enable
-    sleep 10
 
     # Set up AUR
     echo "Setting up AUR with yay"
@@ -109,7 +104,6 @@ microcode_install() {
         pacman -S --noconfirm --needed amd-ucode
         proc_ucode=amd-ucode.img
     fi
-    sleep 10
 }
 
 # NOTE: The following code is from Chris Titus Tech's "ArchTitus" repository
@@ -131,7 +125,6 @@ graphics_drivers_install() {
         echo "Installing Intel drivers"
         pacman -S --needed --noconfirm libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils lib32-mesa
     fi
-    sleep 10
 }
 
 extra_software_install() {
@@ -155,23 +148,7 @@ extra_software_install() {
     echo "UFW enabled"
     sudo systemctl enable avahi-daemon.service
     echo "Avahi enabled"
-    sleep 10
 }
-
-echo
-echo "Final configuration"
-echo "Host: $HOST_NAME"
-echo "User: $USER_NAME"
-echo "Region: $REGION"
-echo "City: $CITY"
-echo "Disk: $DISK_DEVICE"
-echo "Swap: $SWAP_SIZE"
-echo "EFI: $EFI_SIZE"
-echo
-echo "Root Password: $ROOT_PASSWD"
-echo "User Password: $USER_PASSWD"
-echo
-sleep 10
 
 arch_configuration
 microcode_install
