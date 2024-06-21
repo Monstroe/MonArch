@@ -9,18 +9,6 @@ sleep 1
 
 source settings.cfg
 
-echo "Settings (DISK):"
-echo "Host: $HOST_NAME"
-echo "User: $USER_NAME"
-echo "Region: $REGION"
-echo "City: $CITY"
-echo "Disk: $DISK_DEVICE"
-echo "Swap: $SWAP_SIZE"
-echo "EFI: $EFI_SIZE"
-echo "Root Password: $ROOT_PASSWD"
-echo "User Password: $USER_PASSWD"
-sleep 120
-
 disk_part1=${DISK_DEVICE}1
 disk_part2=${DISK_DEVICE}2
 disk_part3=${DISK_DEVICE}3

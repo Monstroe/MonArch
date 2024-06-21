@@ -20,6 +20,7 @@ arch_configuration() {
     echo "Setting up timezone..."
     ln -sf /usr/share/zoneinfo/${REGION}/${CITY} /etc/localtime
     hwclock --systohc
+    sleep 10
 
     # Setting up Locale
     echo "Setting up locale..."
@@ -27,30 +28,39 @@ arch_configuration() {
     locale-gen
     echo "LANG=en_US.UTF-8" >/etc/locale.conf
     echo "KEYMAP=us" >/etc/vconsole.conf
+    sleep 10
 
     # Setting Hostname
     echo "Setting hostname..."
     echo "${HOST_NAME}" >/etc/hostname
+    sleep 10
 
     # Setting Root Password
     echo "Setting root password..."
     echo "root:${ROOT_PASSWD}" | chpasswd
+    sleep 10
 
     # Creating Default User
     echo "Creating user..."
     useradd -m -G wheel -s /bin/bash ${USER_NAME}
     echo "${USER_NAME}:${USER_PASSWD}" | chpasswd
     sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+    sleep 10
 
     # Setting up GRUB Bootloader
     echo "Setting up GRUB Bootloader..."
     if [ -d "/sys/firmware/efi" ]; then
+        echo "EFI Bootloader"
+        sleep 5
         pacman -S efibootmgr --noconfirm --needed
         grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
     else
+        echo "BIOS Bootloader"
+        sleep 5
         grub-install --target=i386-pc ${DISK_DEVICE}
     fi
     grub-mkconfig -o /boot/grub/grub.cfg
+    sleep 10
 
     # Editing pacman
     echo "Editing pacman config..."
@@ -60,6 +70,7 @@ arch_configuration() {
     sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
     # Add ILoveCandy Modifier
     sed -i '/ParallelDownloads/a ILoveCandy' /etc/pacman.conf
+    sleep 10
 
     # Set up Reflector
     echo "Setting up mirrors with reflector..."
@@ -67,6 +78,7 @@ arch_configuration() {
     reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
     sed -i 's/--latest 5/--latest 20/' /etc/xdg/reflector/reflector.conf
     sed -i 's/--sort age/--sort rate/' /etc/xdg/reflector/reflector.conf
+    sleep 10
 
     # Set up firewall
     echo "Setting up firewall with ufw..."
@@ -75,15 +87,17 @@ arch_configuration() {
     ufw allow ssh
     ufw limit ssh
     ufw enable
+    sleep 10
 
     # Set up AUR
     echo "Setting up AUR with yay"
-    cd /home/$USER_NAME
+    #cd /home/$USER_NAME
     git clone https://aur.archlinux.org/yay.git
     cd yay
     makepkg -si
     cd ..
     rm -rf yay
+    sleep 10
 }
 
 # NOTE: The following code is from Chris Titus Tech's "ArchTitus" repository
@@ -100,6 +114,7 @@ microcode_install() {
         pacman -S --noconfirm --needed amd-ucode
         proc_ucode=amd-ucode.img
     fi
+    sleep 10
 }
 
 # NOTE: The following code is from Chris Titus Tech's "ArchTitus" repository
@@ -121,6 +136,7 @@ graphics_drivers_install() {
         echo "Installing Intel drivers"
         pacman -S --needed --noconfirm libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils lib32-mesa
     fi
+    sleep 10
 }
 
 extra_software_install() {
@@ -144,6 +160,7 @@ extra_software_install() {
     echo "UFW enabled"
     sudo systemctl enable avahi-daemon.service
     echo "Avahi enabled"
+    sleep 10
 }
 
 echo "Host: $HOST_NAME"
